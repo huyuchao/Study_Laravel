@@ -1,0 +1,4 @@
+php artisan serve  启动本地php服务器
+
+创建中间件命令：
+php artisan make:middleware CheckAge
