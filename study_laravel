@@ -1,4 +1,201 @@
 php artisan serve  启动本地php服务器
 
+csrf 默认开启保护（post请求要加特殊处理）
+
 创建中间件命令：
 php artisan make:middleware CheckAge
+
+中间件的注册及参数
+
+一般中间件：请求前处理，请求后处理
+Terminable 中间件
+
+
+控制器：控制器被存放在 app/Http/Controllers 目录下
+
+控制器的创建
+控制器的配置（路径问题）
+
+控制器也可以指定中间件
+1，配置路由是指定     Route::get('profile', 'UserController@show')->middleware('auth');
+2，控制器构造方法中指定（单独中间件或者闭包中间件）
+
+
+资源控制器
+php artisan make:controller PhotoController --resource
+
+资源路由：
+Route::resource('photos', 'PhotoController');
+
+
+请求：-----------------------------------------------
+Request：Illuminate\Http\Request
+
+依赖注入请求对象
+
+PSR-7 请求
+
+输入数据的预处理和规范化：在 Laravel 的全局中间件中默认包含了 TrimStrings 和 ConvertEmptyStringsToNull 两个中间件。这些中间件被列在 App\Http\Kernel 类中。它们会自动处理所有请求中传入的字符串字段，比如将空的字符串字段转变成 null 值
+
+
+获取输入数据：
+$input = $request->all();
+
+$name = $request->input('name','default value')
+
+如果传输表单数据中包含「数组」形式的数据，那么可以使用「点」语法来获取数组：
+$name = $request->input('products.0.name');
+$names = $request->input('products.*.name');
+
+通过动态属性获取输入数据
+$name = $request->name;
+
+Laravel 在处理动态属性的优先级是，先从请求的数据中查找，没有的话再到路由参数中找。
+
+确定是否有输入值
+if ($request->has('name')) {
+    //
+}
+
+Cookies-------------------------------  默认 Laravel 创建的所有 Cookie 都是加密过的
+从请求中获取 Cookie 值
+$value = $request->cookie('name');
+
+将 Cookies 附加到响应
+return response('Hello World')->cookie(
+    'name', 'value', $minutes
+);
+
+
+生成 Cookie 实例,并响应到response
+$cookie = cookie('name', 'value', $minutes);
+return response('Hello World')->cookie($cookie);
+
+
+文件资源-------------------------------------
+获取上传文件
+$file = $request->file('photo');
+$file = $request->photo;
+
+文件是否存在
+if ($request->hasFile('photo')) {
+    //
+}
+文件是否有效：是否上传成功
+if ($request->file('photo')->isValid()) {
+    //
+}
+
+文件路径 & 扩展
+$path = $request->photo->path();  文件路径
+$extension = $request->photo->extension();  文件扩展名(可能跟原始的不一样)
+
+
+储存上传文件
+$path = $request->photo->store('images');
+$path = $request->photo->storeAs('images', 'filename.jpg');
+
+
+store 方法允许存储文件到相对于文件系统根目录配置的路径。这个路径不能包含文件名，名称将使用 MD5 散列文件内容自动生成。
+
+store 方法还接受一个可选的第二个参数，用于文件存储到磁盘的名称。这个方法会返回文件相对于磁盘根目录的路径：
+
+Response响应----------------------------------------------------
+1，字符串 & 数组
+Route::get('/', function () {
+    return 'Hello World';
+});
+
+2，响应对象
+Route::get('home', function () {
+    return response('Hello World', 200)
+                  ->header('Content-Type', 'text/plain');
+});
+附加头信息至响应
+return response($content)
+            ->header('Content-Type', $type)
+            ->header('X-Header-One', 'Header Value')
+            ->header('X-Header-Two', 'Header Value');
+
+withHeaders  数组结构：
+return response($content)
+            ->withHeaders([
+                'Content-Type' => $type,
+                'X-Header-One' => 'Header Value',
+                'X-Header-Two' => 'Header Value',
+            ]);
+
+附加 Cookie 至响应
+return response($content)
+                ->header('Content-Type', $type)
+                ->cookie('name', 'value', $minutes);
+
+Cookies 加密  默认加密，所以客户端无法读取和操作。
+不想加密：在中间件中去除
+App\Http\Middleware\EncryptCookies
+
+/**
+ * 无需被加密的 cookie 名
+ *
+ * @var array
+ */
+protected $except = [
+    'cookie_name',
+];
+
+
+重定向 redirect函数 --------------------------
+Route::get('dashboard', function () {
+    return redirect('home/dashboard');
+});
+
+back函数：
+Route::post('user/profile', function () {
+    // 验证请求...
+
+    return back()->withInput();
+});
+
+重定向至命名路由-----------------------
+return redirect()->route('login');
+return redirect()->route('profile', ['id' => 1]);
+
+重定向至控制器行为---------------------------
+return redirect()->action('HomeController@index');
+return redirect()->action(
+    'UserController@profile', ['id' => 1]
+);
+
+其他响应类型
+视图响应
+return response()
+            ->view('hello', $data, 200)
+            ->header('Content-Type', $type);
+
+JSON 响应
+return response()->json([
+    'name' => 'Abigail',
+    'state' => 'CA'
+]);
+
+文件下载-------------------------------
+return response()->download($pathToFile);
+return response()->download($pathToFile, $name, $headers);
+管理文件下载的扩展包 Symfony HttpFoundation，要求下载文件名必须是 ASCII 编码。
+
+
+Laravel 的 HTTP 会话机制  Session
+
+Laravel 本身支持比较热门的 Session 后端驱动，如 Memcached、Redis 和数据库。
+
+配置
+config/session.php
+
+Session 配置的 driver 的选项定义了每次请求的 Session 数据的存储位置。Laravel 附带了几个不错且可开箱即用的驱动：
+
+    file - 将 Session 保存在 storage/framework/sessions。
+    cookie - Session 保存在安全加密的 Cookie 中。
+    database - Session 保存在关系型数据库。
+    memcached / redis - 将 Sessions 保存在其中一个快速且基于缓存的存储系统中。
+    array - 将 Sessions 保存在简单的 PHP 数组中，并只存在于本次请求.
+

@@ -13,6 +13,7 @@
 </head>
 <body>
 <form action="loginSuccess" method="post">
+    {{ csrf_field() }}
     <table>
         <tr>
             <td>项目根目录：$path <?php echo $name; ?> </td>
