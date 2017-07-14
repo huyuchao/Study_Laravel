@@ -25,6 +25,11 @@ class UserController extends  Controller
             }
             echo "username = ".$username."  password== ".$password." path = ".$request->fullUrl();
             echo "<br>";
+            // 验证 bail  验证不通过就停止,会自动重定向到当前页面
+            $this->validate($request,[
+                'username' => 'bail|required|unique:posts|max:255',
+                'body' => 'required',
+            ]);
 
 
             return view("user.loginSuccess")->with("userName",$username);

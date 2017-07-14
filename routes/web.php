@@ -20,6 +20,12 @@ Route::get('/', function () {
 Route::get('register', function () {
     return view('user.register', ['name' => 'James']);
 });
+
+Route::get('register1', function () {
+    return view('user.register1', ['name' => 'James']);
+});
+
+
 /*Route::get('loginSuccess/{userName}', function ($userName) {
     return view('user.loginSuccess')->with("userName",$userName);
 });*/

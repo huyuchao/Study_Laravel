@@ -1,10 +1,35 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Administrator
+ * Date: 2017/7/12
+ * Time: 14:33
+ */
+?>
 <html>
 <head>
     <meta charset="UTF-8">
     <title>新增用户</title>
 </head>
 <body>
-<form action="loginSuccess.blade.php" method="get">
+<?php
+#echo  "errors ===== ";
+#print_r($errors)
+?>
+<?php if (count($errors) > 0):?>
+    <div class="alert alert-danger">
+        <ul>
+            <?php foreach ($errors->all() as $error):?>
+            <li><?php print_r($error) ?></li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+<?php endif;  ?>
+
+<form action="loginSuccess" method="post">
+
+    {{ csrf_field() }}
+
     <table>
         <tr>
             <td>项目根目录：$path</td>
