@@ -14,12 +14,7 @@
 Route::get('/', function () {
     return view('welcome');
 });
-/**
- * 指向php界面
- */
-Route::get('register', function () {
-    return view('user.register', ['name' => 'James']);
-});
+
 
 Route::get('register1', function () {
     return view('user.register1', ['name' => 'James']);
@@ -31,6 +26,15 @@ Route::get('register1', function () {
 });*/
 
 /**
+ * 指向php界面
+ */
+Route::get('user/register', function () {
+    return view('user.register', ['name' => 'James','realName'=>'']);
+});
+/**
  * 指向控制器
  */
-Route::post('loginSuccess', "UserController@register");
+Route::post('user/loginSuccess', "UserController@register");
+
+#Auth::routes();
+Route::get('/home', 'HomeController@index')->name('home');

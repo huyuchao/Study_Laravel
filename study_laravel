@@ -1,3 +1,33 @@
+php 版本查看： php -v
+PHP 5.6.28 (cli) (built: Nov  9 2016 06:40:27)
+
+composer版本查看
+composer --version
+Composer version 1.4.2 2017-05-17 08:17:52
+
+laravel 版本
+php artisan --version
+Laravel Framework 5.4.28
+
+laravel Installer版本
+laravel --version
+Laravel Installer 1.3.7
+
+
+
+/* 判断常量是否存在*/
+if (defined('MYCONSTANT')) {}
+
+//判断变量是否存在
+if (isset($myvar)) {}
+
+//判断函数是否存在
+if (function_exists('imap_open')) {} else {}
+
+
+
+
+
 php artisan serve  启动本地php服务器
 
 csrf 默认开启保护（post请求要加特殊处理）
@@ -198,4 +228,30 @@ Session 配置的 driver 的选项定义了每次请求的 Session 数据的存�
     database - Session 保存在关系型数据库。
     memcached / redis - 将 Sessions 保存在其中一个快速且基于缓存的存储系统中。
     array - 将 Sessions 保存在简单的 PHP 数组中，并只存在于本次请求.
+
+
+
+---------------------------------------
+Eloquent ORM    数据库和实体对象一一对应。  实体对象具有数据库操作的所有功能。
+
+普通数据库查询：DB::select(); DB::insert();DB::update();DB:delete();
+
+
+Eloquent模型通常放在 app 目录中，不过你可以将他们随意放在任何可通过 composer.json 自动加载的地方。
+所有的 Eloquent 模型都继承自 Illuminate\Database\Eloquent\Model 类。
+
+创建模型实例 make:model Artisan 命令：
+php artisan make:model User
+
+
+
+
+
+
+
+
+
+
+
+
 
