@@ -16,15 +16,22 @@
 <?php
 #phpinfo();
 use Illuminate\Support\Facades\Session;
-$username = Session::get('username', '');
+$username1 = Session::get('username', '');
 $password = Session::get('password', '');
 $realName = Session::get('realName', '');
 $_old_input = Session::get('_old_input', '');
 if ($_old_input!=null){
-    $username = $_old_input['username'];
+    $username1 = $_old_input['username'];
     $password = $_old_input['password'];
     $realName = $_old_input['realName'];
 }
+
+if ($username1==null && isset($username)){
+        $username1 = $username;
+}
+
+$username = $username1;
+
 echo  "_old_input = ";
 print_r($_old_input )
 //print_r( Session::all() ); //取出来看看是否put成功

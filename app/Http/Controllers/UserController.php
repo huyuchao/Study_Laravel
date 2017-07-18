@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers;
 
+use App\UserSelf;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\DB;
@@ -32,11 +33,13 @@ class UserController extends  Controller
            }
 
             if ( $password==null){
-                return response()->view("user.register",["password"=>"密码不能为空"]);
+                return back()->withInput(['username'=>$username,'password'=>'密码不能为空','realName'=>$realName]);
+//                return response()->view("user.register",["password"=>"密码不能为空"]);
             }
             if ( $realName==null){
+                return back()->withInput(['username'=>$username,'password'=>$password,'realName'=>'姓名不能为空']);
 //                return redirect()->route("user/register",['name' => '','realName'=>'姓名不能为空']);
-                return response()->view("user.register",["realName"=>"姓名不能为空"]);
+//                return response()->view("user.register",["realName"=>"姓名不能为空"]);
             }
 
             if ($request->is("user/loginSuccess")){
@@ -50,15 +53,34 @@ class UserController extends  Controller
             echo "username = ".$username."  password== ".$password." path = ".$request->fullUrl();
             echo "<br>";
 
-            $user = DB::select("select * from user where userName=? ",[$username]);
+            $users = UserSelf::all();
+            foreach ($users as $u){
+                echo $u->userName." 名称 <br/>";
+            }
+
+
+//            $user = DB::select("select * from user where userName=? ",[$username]);
+            $user = UserSelf::where('userName',$username)->first();
             echo "<br>  user = ";
             print_r($user);
             echo "<br>";
             if ($user!=null){
+
+//                return back()->withInput(['username'=>"用户已经存在",'password'=>$password,'realName'=>$realName]);
+
                 return response()->view("user.register",["username"=>"用户已经存在"]);
             }
 
-            $insertSuccess = DB::insert("insert into user (userName,password,realName) VALUES (?,?,?)",[$username,$password,$realName]);
+//            $insertSuccess = DB::insert("insert into user (userName,password,realName) VALUES (?,?,?)",[$username,$password,$realName]);
+            if ($user==null){
+                $user = new UserSelf();
+            }
+            $user->userName=$username;
+            $user->password=$password;
+            $user->realName=$realName;
+
+            $insertSuccess = $user->save();
+
             echo  "insertSuccess == ".$insertSuccess;
             if ($insertSuccess){
                 return view("user.loginSuccess")->with("userName",$username);

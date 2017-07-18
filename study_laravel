@@ -1,3 +1,6 @@
+composer.json 自动加载的地方? 怎么配置。
+
+
 php 版本查看： php -v
 PHP 5.6.28 (cli) (built: Nov  9 2016 06:40:27)
 
@@ -243,9 +246,71 @@ Eloquent模型通常放在 app 目录中，不过你可以将他们随意放在�
 创建模型实例 make:model Artisan 命令：
 php artisan make:model User
 
+当你生成一个模型时想要顺便生成一个 数据库迁移，可以使用 --migration 或 -m 选项：
+php artisan make:model User --migration
+
+php artisan make:model User -m
 
 
 
+获取集合  all和get
+$users = UserSelf::all();
+$users = UserSelf::where('userName',$username)->get(); // 所有符合条件的集合
+
+获取单条数据
+$user = UserSelf::where('userName',$username)->first();
+
+
+分块结果
+使用游标
+
+
+取回单个模型／集合
+
+// 通过主键取回一个模型...
+$flight = App\Flight::find(1);
+
+// 取回符合查询限制的第一个模型 ...
+$flight = App\Flight::where('active', 1)->first();
+
+「未找到」异常
+有时候你可能希望在找不到模型时抛出一个异常，这在路由或是控制器内特别有用。
+findOrFail 以及 firstOrFail 方法会取回查询的第一个结果。
+如果没有找到相应结果，则会抛出一个 Illuminate\Database\Eloquent\ModelNotFoundException：
+
+$model = App\Flight::findOrFail(1);
+
+$model = App\Flight::where('legs', '>', 100)->firstOrFail();
+
+
+聚合函数  count、sum、max
+$count = App\Flight::where('active', 1)->count();
+$max = App\Flight::where('active', 1)->max('price');
+
+添加和更新模型
+
+添加：new 一个新对象然后save
+更新：先找到对象，然后在save
+
+
+批量更新
+批量赋值   可以被批量赋值的字段及 除了什么字段其他的都可以赋值。
+
+其它创建的方法
+你可以用来通过属性批量赋值创建你的模型：firstOrCreate 和 firstOrNew。
+
+其次，你可能会碰到模型已经存在则更新，否则创建新模型的情形，Laravel 提供了一个 updateOrCreate 方法来一步完成该操作
+
+删除模型  delete
+$flight->delete();
+
+通过主键来删除现有的模型
+App\Flight::destroy(1);
+App\Flight::destroy([1, 2, 3]);
+App\Flight::destroy(1, 2, 3);
+
+通过查询来删除模型
+$deletedRows = App\Flight::where('active', 0)->delete();
 
 
 
